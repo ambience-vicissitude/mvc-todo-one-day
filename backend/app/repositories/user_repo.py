@@ -25,10 +25,6 @@ class UserRepository:
             User: The newly created user instance.
         """
 
-        # pre-check for existing user with the same name
-        if self.get_by_name(name) is not None:
-            raise ValueError(f"User with name '{name}' already exists.")
-
         user = User(name=name)
 
         # Note: add-commit is best, violations will be caught at commit time

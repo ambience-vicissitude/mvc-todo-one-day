@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend: FastAPI (SQLite)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--host", "127.0.0.1", "--port", "8000"],
+      "cwd": "${workspaceFolder}/backend",
+      "python": "${workspaceFolder}/backend/.venv/Scripts/python.exe",
+      "env": {
+        "DATABASE_URL": "sqlite:///./local.db",
+        "APP_ENV": "development",
+        "LOG_LEVEL": "INFO",
+        "WEB_CONCURRENCY": "1"
+      },
+      "preLaunchTask": "Backend: initialize local SQLite",
+      "justMyCode": true
+    },
+    {
+      "name": "Frontend: Edge (Vite already running)",
+      "type": "pwa-msedge",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/frontend"
+    }
+  ]
+}

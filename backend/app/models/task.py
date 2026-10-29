@@ -1,3 +1,5 @@
+"""Task model for the application."""
+
 import enum
 from datetime import date, datetime
 

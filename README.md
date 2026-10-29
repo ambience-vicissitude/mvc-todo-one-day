@@ -352,7 +352,7 @@ Deliberately trimmed for the time box (including items marked `TRIMMED` in code)
 - Postgres was selected although the supplied assignment text names SQLite; this deviation is
   documented in section 14 and should be confirmed with the evaluator.
 
-## 16. Future CI and tooling (nice to have, delete what you do not want)
+## 16. Future CI and tooling (nice to have)
 
 - **Dependabot**: opens PRs bumping pip, npm, Docker and Actions dependencies; CI then validates them.
   Opt-in per repository by adding `.github/dependabot.yml` (not enabled here).
@@ -362,3 +362,7 @@ Deliberately trimmed for the time box (including items marked `TRIMMED` in code)
 - **`helm/kind-action`**: starts a Kind cluster in CI to test the Kubernetes deploy.
 - **GHCR publishing**: push images to GitHub Container Registry on release tags.
 - **Load testing**: k6 in a container to measure per-instance throughput and tune workers and HPA.
+
+## 17. Known issues
+
+- Python, Node, Postgres are all out of date. As of this note, Python should be at 3.16, Node should be at 26, and Postgres should be at 18.

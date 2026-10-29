@@ -1,0 +1,5 @@
+# Isolates this application's Kubernetes resources from other workloads in the cluster.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: taskapp

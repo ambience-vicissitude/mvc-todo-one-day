@@ -1,0 +1,80 @@
+ # FastAPI workload: replicas, health probes, resource limits, stable Service, and CPU autoscaling.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: taskapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: task-backend:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secret
+          # TRIM: Add startupProbe here if startup becomes slow; it delays liveness and readiness checks until startup succeeds.
+          # Liveness never checks the DB (a DB outage must not restart-loop pods);
+          # readiness does (no traffic until the DB answers).
+          livenessProbe:
+            httpGet: { path: /api/health, port: 8000 }
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet: { path: /api/health/ready, port: 8000 }
+            periodSeconds: 5
+          # CPU is in millicores (1000m = one core); memory in Mi (mebibytes).
+          # Starting values, tune with `kubectl top pods`. Requests drive HPA percentages.
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits: { cpu: 500m, memory: 256Mi }
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+---
+# Service: stable DNS name (http://backend:8000) in front of ever-changing pod IPs.
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: taskapp
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8000
+---
+# HorizontalPodAutoscaler: adds/removes backend pods based on average CPU vs the request.
+# Needs metrics-server (installed by scripts/kind-up.sh).
+# Connection budget: 5 pods x 1 worker x (3 + 2) = 25 DB connections, under Postgres' default 100.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend
+  namespace: taskapp
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

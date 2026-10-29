@@ -1,0 +1,25 @@
+# Shared runtime settings and development-only database credentials for the app workloads.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: taskapp
+data:
+  APP_ENV: production
+  LOG_LEVEL: INFO
+  # One worker per pod; scale with replicas (HPA) instead of workers.
+  WEB_CONCURRENCY: "1"
+---
+# DEV ONLY: Secrets are base64, not encrypted, and this file is committed.
+# Production: Sealed Secrets, External Secrets Operator or a cloud secret manager.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+  namespace: taskapp
+type: Opaque
+stringData:
+  POSTGRES_USER: taskapp
+  POSTGRES_PASSWORD: dev_only_password
+  POSTGRES_DB: taskapp
+  DATABASE_URL: postgresql+psycopg://taskapp:dev_only_password@postgres:5432/taskapp

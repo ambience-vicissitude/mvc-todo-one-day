@@ -2,11 +2,21 @@
 
 import logging
 
+from sqlalchemy.exc import IntegrityError
+
 from app.core.exceptions import ConflictError, NotFoundError
 from app.models.user import User
 from app.repositories.user_repo import UserRepository
 
 logger = logging.getLogger("app.services.user")
+
+
+def _is_user_name_unique_violation(error: IntegrityError) -> bool:
+    original = error.orig
+    constraint_name = getattr(getattr(original, "diag", None), "constraint_name", None)
+    if constraint_name == "users_name_key":
+        return True
+    return "unique constraint failed: users.name" in str(original).lower()
 
 
 class UserService:
@@ -32,9 +42,12 @@ class UserService:
         Raises:
             ConflictError: If a user with the given name already exists.
         """
-        if self._repo.get_by_name(name) is not None:
-            raise ConflictError(f"User '{name}' already exists")
-        user = self._repo.add(name)
+        try:
+            user = self._repo.add(name)
+        except IntegrityError as exc:
+            if _is_user_name_unique_violation(exc):
+                raise ConflictError(f"User '{name}' already exists") from exc
+            raise
         logger.info("user created id=%s", user.id)
         return user
 

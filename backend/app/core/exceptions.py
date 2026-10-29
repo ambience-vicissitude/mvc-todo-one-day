@@ -18,16 +18,13 @@ class DomainError(Exception):
 class NotFoundError(DomainError):
     """Raised when a requested entity is not found."""
 
-    pass
 
 
 class ConflictError(DomainError):
     """Raised when a conflict occurs, such as a duplicate entry."""
 
-    pass
 
 
 class BusinessRuleError(DomainError):
     """Raised when a business rule is violated."""
 
-    pass

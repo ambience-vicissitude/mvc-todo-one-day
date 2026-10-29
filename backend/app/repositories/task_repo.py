@@ -53,6 +53,8 @@ class TaskRepository:
         """
 
         # TRIM: Eager-load future relationships to avoid N+1 queries; paginate if this list grows.
+        # If the relationship becomes more complex, and lazy loading causes N+1 queries,
+        # consider using joinedload or selectinload.
         stmt = select(Task).where(Task.user_id == user_id).order_by(Task.id.desc())
         if status is not None:
             stmt = stmt.where(Task.status == status)

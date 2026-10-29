@@ -1,9 +1,11 @@
 """Repository for accessing user data.
 
-Note: Repositories keep a data-access layer for SQLAlchemy models, separating it from business logic.
+Note: Repositories keep a data-access layer for SQLAlchemy models, separating it from
+business logic.
 """
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.user import User
@@ -27,9 +29,12 @@ class UserRepository:
 
         user = User(name=name)
 
-        # Note: add-commit is best, violations will be caught at commit time
         self._session.add(user)
-        self._session.commit()
+        try:
+            self._session.commit()
+        except IntegrityError:
+            self._session.rollback()
+            raise
 
         return user
 
@@ -44,23 +49,6 @@ class UserRepository:
         """
 
         return self._session.get(User, user_id)
-
-    def get_by_name(self, name: str) -> User | None:
-        """Get a user by their name.
-
-        Args:
-            name (str): The name of the user to retrieve.
-
-        Returns:
-            User | None: The user instance if found, else None.
-        """
-
-        # TRIM: Would that duplicate names be a data-integrity problem, use `scalars(query).one_or_none()`
-        # Or use `scalars(query).first()` if duplicates is not a problem and you just want the first match.
-        # but for a username, it is reasonable to say that this is bad in general,
-        # and `one_or_none()` is appropriate, alongside a db constraint
-        # `one()` is also possible, but not my recommendation
-        return self._session.scalars(select(User).where(User.name == name)).one_or_none()
 
     def list_all(self) -> list[User]:
         """List all users ordered by name.

@@ -8,6 +8,8 @@ from app.models.base import Base
 
 
 class User(Base):
+    """User model representing a user in the system."""
+
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -21,7 +21,9 @@ def client():
 
     # In-memory SQLite keeps tests fast and dependency-free; the compose integration test
     # covers real Postgres. TRIMMED: no Postgres-specific tests (e.g. via testcontainers).
-    engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+    engine = create_engine(
+        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
+    )
     Base.metadata.create_all(engine)
     factory = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 

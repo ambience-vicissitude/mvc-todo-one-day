@@ -7,11 +7,14 @@ from pydantic import BaseModel, ConfigDict, StringConstraints
 from app.core.constants import USER_NAME_MAX_LENGTH
 
 # UserName with annotations
-UserName = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=USER_NAME_MAX_LENGTH)]
+UserName = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=USER_NAME_MAX_LENGTH)
+]
 
 
 class UserCreate(BaseModel):
     """Schema for creating a new user."""
+
     # TRIM: Could add email, password, etc. if needed
 
     name: UserName

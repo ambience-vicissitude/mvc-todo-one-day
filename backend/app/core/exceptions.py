@@ -19,12 +19,9 @@ class NotFoundError(DomainError):
     """Raised when a requested entity is not found."""
 
 
-
 class ConflictError(DomainError):
     """Raised when a conflict occurs, such as a duplicate entry."""
 
 
-
 class BusinessRuleError(DomainError):
     """Raised when a business rule is violated."""
-

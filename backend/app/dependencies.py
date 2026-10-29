@@ -49,7 +49,9 @@ def get_user_service(db: DbSession) -> UserService:
     return UserService(UserRepository(db))
 
 
-def get_task_service(db: DbSession, events: Annotated[EventPublisher, Depends(get_event_publisher)]) -> TaskService:
+def get_task_service(
+    db: DbSession, events: Annotated[EventPublisher, Depends(get_event_publisher)]
+) -> TaskService:
     """Get the task service instance.
 
     Args:
@@ -66,7 +68,9 @@ UserServiceDep = Annotated[UserService, Depends(get_user_service)]
 TaskServiceDep = Annotated[TaskService, Depends(get_task_service)]
 
 
-def get_current_user(user_id: Annotated[int, Depends(get_current_user_id)], users: UserServiceDep) -> User:
+def get_current_user(
+    user_id: Annotated[int, Depends(get_current_user_id)], users: UserServiceDep
+) -> User:
     """Get the current user instance.
 
     Args:

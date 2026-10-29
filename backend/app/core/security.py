@@ -35,8 +35,8 @@ Then:
 - `users` gains an `external_subject` column (the `sub` claim); users are created on first login.
 - Check scopes/roles from claims for authorization (e.g. `tasks:write`).
 - Frontend: authorization-code + PKCE (e.g. oidc-client-ts), tokens in memory only or, better,
-  a backend-for-frontend holding an httpOnly, Secure, SameSite cookie. Never use localStorage (XSS attack).
-  See the matching note in frontend/src/api/client.ts.
+  a backend-for-frontend holding an httpOnly, Secure, SameSite cookie.
+  Never use localStorage (XSS attack). See the matching note in frontend/src/api/client.ts.
 - HTTPS everywhere: TLS terminates at the edge (Nginx / Ingress); this API trusts
   X-Forwarded-Proto (uvicorn --proxy-headers). See README "Security and HTTPS".
 - Add rate limiting on auth-related routes and CORS only for known origins if the SPA moves

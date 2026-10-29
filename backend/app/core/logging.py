@@ -19,7 +19,9 @@ def configure_logging(level: str) -> None:
     )
 
 
-async def log_requests(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+async def log_requests(
+    request: Request, call_next: Callable[[Request], Awaitable[Response]]
+) -> Response:
     """Log incoming HTTP requests and their response times."""
 
     start = time.perf_counter()

@@ -3,10 +3,13 @@
 Provides cached SQLAlchemy engine and session factory, and a generator for database sessions.
 
 Note: The following are common bottlenecks when using SQLAlchemy with a database connection pool.
--  If there is a bottleneck at the connection level, consider the pool size and max overflow settings or adopt PgBouncer.
+-  If there is a bottleneck at the connection level, consider the pool size and
+   max overflow settings or adopt PgBouncer.
 -  If there is a bottleneck at the session level, consider adjusting the session factory settings.
--  If there is a bottleneck at the query level, consider optimizing your SQL queries or adding appropriate indexes.
--  If there is a bottleneck at the transaction level, consider reviewing your transaction management strategy.
+-  If there is a bottleneck at the query level, consider optimizing your SQL queries or
+   adding appropriate indexes.
+-  If there is a bottleneck at the transaction level, consider reviewing your
+   transaction management strategy.
 
 Note 2: Use SQLAlchemy pool settings when the application process needs more connections and
 Postgres can safely handle them. Use PgBouncer when the app needs many client connections,
@@ -40,9 +43,11 @@ def get_engine() -> Engine:
 def _session_factory() -> sessionmaker[Session]:
     """Get cached SQLAlchemy session factory."""
 
-    # Note: by caching the session factory, we avoid recreating it for each request, which improves performance.
+    # Note: by caching the session factory, we avoid recreating it for each request,
+    # which improves performance.
     # autoflush=False allows us control over flush timing for database changes
-    # expire_on_commit=False keeps ORM object attributes available, which can improve performance by reducing unnecessary reloads from the database.
+    # expire_on_commit=False keeps ORM object attributes available, which can improve performance by
+    # reducing unnecessary reloads from the database.
     return sessionmaker(
         bind=get_engine(),  # bind the session to the cached engine
         autoflush=False,  # do not automatically flush changes to the database
@@ -54,7 +59,8 @@ def get_db() -> Iterator[Session]:
     """Provide a database session generator."""
 
     # Note: Creates a fresh session for this use and enters its context manager.
-    # When the context exits, SQLAlchemy closes the session and releases any checked-out connection back to the pool.
+    # When the context exits, SQLAlchemy closes the session and releases any
+    # checked-out connection back to the pool.
     # It does not automatically commit; the repository code commits its writes explicitly.
     with _session_factory()() as session:
         # Hands the session over to the caller (which is the route handling the request)

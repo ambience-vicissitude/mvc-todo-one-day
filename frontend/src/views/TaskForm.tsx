@@ -15,7 +15,7 @@ import { TASK_STATUSES, type TaskInput, type TaskStatus } from '../models/task';
  * @property {function} onSubmit - Function to handle form submission with the task input.
  */
 interface Props {
-  onSubmit: (input: TaskInput) => Promise<void>;
+  onSubmit: (input: TaskInput) => Promise<boolean>;
 }
 
 
@@ -24,7 +24,7 @@ interface Props {
  *
  * @export
  * @param {Props} param0 
- * @param {(input: TaskInput) => Promise<void>} param0.onSubmit 
+ * @param {(input: TaskInput) => Promise<boolean>} param0.onSubmit 
  * @returns {*} 
  */
 export function TaskForm({ onSubmit }: Props) {
@@ -38,8 +38,13 @@ export function TaskForm({ onSubmit }: Props) {
   // The submit function handles form submission, validates input, and resets the form fields.
   const submit = async (event: FormEvent) => {
     event.preventDefault();
+
     if (!title.trim()) return;
-    await onSubmit({ title: title.trim(), description, status, due_date: dueDate || null });
+    
+    const succeeded = await onSubmit({ title: title.trim(), description, status, due_date: dueDate || null });
+    // Do not reset the form if the submit was not success
+    if (!succeeded) return;
+    
     setTitle('');
     setDescription('');
     setStatus('todo');

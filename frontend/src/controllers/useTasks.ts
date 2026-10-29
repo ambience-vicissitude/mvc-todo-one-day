@@ -75,15 +75,18 @@ export function useTasks(userId: number | null) {
       await action();
       setError(null);
       setReloadKey((key) => key + 1);
-    } catch (e) {
-      setError(errorMessage(e));
+      return true;
+    } catch (error: unknown) {
+      setError(errorMessage(error));
+      // Return false to indicate the action failed.
+      return false;
     }
   }, []);
 
   // The addTask, updateTask, and removeTask functions use the mutate wrapper to perform API actions and reload tasks on success.
   // Note: these will be called by the UI components to perform task operations for the current user.
-  const addTask = (input: TaskInput) =>
-    userId === null ? Promise.resolve() : mutate(() => tasksApi.create(userId, input));
+  const addTask = (input: TaskInput): Promise<boolean> =>
+    userId === null ? Promise.resolve(false) : mutate(() => tasksApi.create(userId, input));
   const updateTask = (id: number, changes: TaskChanges) =>
     userId === null ? Promise.resolve() : mutate(() => tasksApi.update(userId, id, changes));
   const removeTask = (id: number) =>

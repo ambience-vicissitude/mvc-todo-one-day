@@ -21,7 +21,7 @@ interface Props {
   users: User[];
   selectedUserId: number | null;
   onSelect: (id: number | null) => void;
-  onAdd: (name: string) => Promise<void>;
+  onAdd: (name: string) => Promise<boolean>;
 }
 
 
@@ -33,7 +33,7 @@ interface Props {
  * @param {{}} param0.users 
  * @param {number} param0.selectedUserId 
  * @param {(id: number) => void} param0.onSelect 
- * @param {(name: string) => Promise<void>} param0.onAdd 
+ * @param {(name: string) => Promise<boolean>} param0.onAdd 
  * @returns {*} 
  */
 export function UserPicker({ users, selectedUserId, onSelect, onAdd }: Props) {
@@ -45,7 +45,8 @@ export function UserPicker({ users, selectedUserId, onSelect, onAdd }: Props) {
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (!name.trim()) return;
-    await onAdd(name.trim()); // trim the name just in case of typos
+    const succeeded = await onAdd(name.trim());
+    if (!succeeded) return;
     setName('');
   };
 

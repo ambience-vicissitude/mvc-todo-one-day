@@ -54,14 +54,17 @@ export function useUsers() {
   };
 
   // The addUser function creates a new user via the API and selects it.
-  const addUser = async (name: string) => {
+  const addUser = async (name: string): Promise<boolean> => {
     try {
       const user = await usersApi.create(name);
       setUsers((previous) => [...previous, user]);
       selectUser(user.id);
       setError(null);
+      return true;
     } catch (e) {
       setError(errorMessage(e));
+      // Return false to indicate the user was not added successfully.
+      return false;
     }
   };
 
